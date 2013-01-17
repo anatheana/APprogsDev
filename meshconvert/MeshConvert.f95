@@ -32,6 +32,8 @@ PROGRAM MeshConvert
 	USE String_Utility
   !! My own math- and printing-related routines
 	USE AP_utils
+  !! experimental
+  USE meshVolume
 	IMPLICIT NONE
 	
 	INTEGER, PARAMETER :: str_len = 128, line_len = 512
@@ -233,7 +235,7 @@ SUBROUTINE write_nfo()
 	IMPLICIT NONE
 
 	INTEGER :: li, lj, fa, fb, fc
-	REAL(FP_KIND) :: min_x, max_x, min_y, max_y, min_z, max_z, triA, max_triA, min_triA, triA_temp
+	REAL(FP_KIND) :: min_x, max_x, min_y, max_y, min_z, max_z, triA, max_triA, min_triA, triA_temp, vol
 	REAL(FP_KIND), DIMENSION(3) :: av, bv, cv
 	
 	min_x = MINVAL(vertex_list(1:vertex_list_n,1))
@@ -274,6 +276,10 @@ SUBROUTINE write_nfo()
 
 	WRITE(*,*) ""
 	WRITE(*,*) "NFO format write OK."
+  
+  vol = calculate_volume(vertex_list(1:vertex_list_n,:), face_list(1:face_list_n,:))
+  WRITE(*,*) "Experimental: volume from mesh is ", vol
+  WRITE(fp_out,*) "Experimental: volume from mesh is ", vol
 	
 END SUBROUTINE write_nfo
 

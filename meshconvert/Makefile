@@ -27,7 +27,7 @@ PROG := $(addsuffix .exe, $(SRC_NAMES))
 INC_DIR := ../mods/$(PLATFORM)/
 LIB_DIR := ../libs/$(PLATFORM)/
 BIN_DIR := ../bin/$(PLATFROM)/
-LOCAL_LIBS := -lPaulV_utility -lAP_library
+LOCAL_LIBS := -lPaulV_utility -lAP_library -lmeshVolume
 
 
 # Object recipies

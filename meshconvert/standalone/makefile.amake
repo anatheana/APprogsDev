@@ -1,0 +1,150 @@
+
+#
+# Absoft Developer Tools Interface requires use of this makefile.
+#
+.SHELL: name="cmd.exe"
+MKDIR=if not exist "$(OBJDIR)" mkdir 
+RMDIR=rmdir /S /Q
+
+#
+# Variables for the compiler(s) and linker
+#
+ABSOFT_F95=f95
+ABSOFT_F77=f95
+VAST_PREPROCESSOR=vastfp.exe
+RC=rc.exe
+CL=cl.exe
+MAKE=amake2
+ABSOFT_F95_LINKER=f95
+DUMMY=
+
+#
+# Flags
+#
+ABSOFT_F95_FLAGS=-YLOOP_ANALYZER -LNO:simd_verbose=on -LNO:apo_verbose=on -CG:filetable_verbose=on -O2 -m32 -s -stack:32768000
+ABSOFT_F77_FLAGS=-YLOOP_ANALYZER -LNO:simd_verbose=on -LNO:apo_verbose=on -CG:filetable_verbose=on -O2 -f77_compat -m32 -s -stack:32768000
+RC_FLAGS=
+CL_FLAGS= -O2
+MAKE_FLAGS= -k
+ABSOFT_F95_LINKER_FLAGS=-IPA:debug=on -IPA:source_pu_order=on -stack:32768000 -m32 -O2 unix.lib
+
+#
+# Name of the executable
+#
+TARGET=MeshConvert32.exe
+OUTDIR=.
+OBJDIR=.\Release
+
+#
+# Files for this executable
+#
+VAST_PREPROCESSOR_FILES=
+ABSOFT_F95_FILES="MeshConvert.f95" "AP_quicksort.f95" "AP_utils.f95" "File_Utility.f95" "Fundamental_Constants.f95" "meshVolume.f95" "String_Utility.f95" "Type_Kinds.f95"
+ABSOFT_F77_FILES=
+CL_FILES=
+ABSOFT_F95_LINKER_FILES=
+RC_FILES=
+MAKE_FILES=
+
+#
+# Rules and dependencies for the executable
+#
+SRCFILES=$(ABSOFT_F95_FILES)
+OBJFILES="$(OBJDIR)\MeshConvert.obj" "$(OBJDIR)\AP_quicksort.obj" "$(OBJDIR)\AP_utils.obj" "$(OBJDIR)\File_Utility.obj" "$(OBJDIR)\Fundamental_Constants.obj" "$(OBJDIR)\meshVolume.obj" "$(OBJDIR)\String_Utility.obj" "$(OBJDIR)\Type_Kinds.obj"
+all: "$(OBJDIR)" "$(OUTDIR)\$(TARGET)"
+	
+
+"$(OUTDIR)\$(TARGET)":  $(OBJFILES) $(ABSOFT_F95_LINKER_FILES) $(MODFILES) $(RC_FILES)
+	$(ABSOFT_F95_LINKER)  $(LPATHS) $(OBJFILES) $(ABSOFT_F95_LINKER_FILES) $(LIBS) -o "$(OUTDIR)\$(TARGET)" $(ABSOFT_F95_LINKER_FLAGS)
+
+
+
+"$(OBJDIR)\MeshConvert.obj": "MeshConvert.f95"
+	$(ABSOFT_F95) -c -nowdir $(ABSOFT_F95_FLAGS) -o "$(OBJDIR)\MeshConvert.obj" "MeshConvert.f95"
+
+"$(OBJDIR)\AP_quicksort.obj": "AP_quicksort.f95"
+	$(ABSOFT_F95) -c -nowdir $(ABSOFT_F95_FLAGS) -o "$(OBJDIR)\AP_quicksort.obj" "AP_quicksort.f95"
+
+"$(OBJDIR)\AP_utils.obj": "AP_utils.f95"
+	$(ABSOFT_F95) -c -nowdir $(ABSOFT_F95_FLAGS) -o "$(OBJDIR)\AP_utils.obj" "AP_utils.f95"
+
+"$(OBJDIR)\File_Utility.obj": "File_Utility.f95"
+	$(ABSOFT_F95) -c -nowdir $(ABSOFT_F95_FLAGS) -o "$(OBJDIR)\File_Utility.obj" "File_Utility.f95"
+
+"$(OBJDIR)\Fundamental_Constants.obj": "Fundamental_Constants.f95"
+	$(ABSOFT_F95) -c -nowdir $(ABSOFT_F95_FLAGS) -o "$(OBJDIR)\Fundamental_Constants.obj" "Fundamental_Constants.f95"
+
+"$(OBJDIR)\meshVolume.obj": "meshVolume.f95"
+	$(ABSOFT_F95) -c -nowdir $(ABSOFT_F95_FLAGS) -o "$(OBJDIR)\meshVolume.obj" "meshVolume.f95"
+
+"$(OBJDIR)\String_Utility.obj": "String_Utility.f95"
+	$(ABSOFT_F95) -c -nowdir $(ABSOFT_F95_FLAGS) -o "$(OBJDIR)\String_Utility.obj" "String_Utility.f95"
+
+"$(OBJDIR)\Type_Kinds.obj": "Type_Kinds.f95"
+	$(ABSOFT_F95) -c -nowdir $(ABSOFT_F95_FLAGS) -o "$(OBJDIR)\Type_Kinds.obj" "Type_Kinds.f95"
+
+"$(OBJDIR)":
+	$(MKDIR) "$(OBJDIR)"
+#
+# Clean Rules
+#
+clean:
+	 if exist "$(OBJDIR)" $(RMDIR) "$(OBJDIR)" 
+	 if exist "$(TARGET)" erase "$(TARGET)"
+
+#
+# Define necessary macros for dependency scanning.
+#
+MKDEP=amakedepend
+MKDEP_FLAGS= -quiet "-pre$(OBJDIR)\"\" -Y -modInfo -errdel -f90 -f makefile.amake
+#
+# Generate dependencies for the project
+#
+ScanAll: "$(OUTDIR)" "$(OBJDIR)" MakeDepsAll
+
+#
+# Scan for all F77, F95, and c/c++ dependencies
+#
+MakeDepsAll:
+	$(MKDEP) "@C:\HY-Data\AIPENTTI\Progs\PSR-Programs\APprogs\dev\meshconvert\standalone\Release\mkdep_F95"
+# DO NOT DELETE THIS LINE - makedepend depends upon it.
+
+
+".\Release\AP_quicksort.obj"&: ".\Release\ap_quicksort.mod"
+
+".\Release\AP_utils.obj"&: ".\Release\ap_utils.mod"
+
+".\Release\File_Utility.obj"&: ".\Release\file_utility.mod"
+
+".\Release\Fundamental_Constants.obj"&: ".\Release\fundamental_constants.mod"
+
+".\Release\meshVolume.obj"&: ".\Release\meshvolume.mod"
+
+".\Release\String_Utility.obj"&: ".\Release\string_utility.mod"
+
+".\Release\Type_Kinds.obj"&: ".\Release\type_kinds.mod"
+
+# Defined Module: .\Release\ap_quicksort.mod
+# Defined Module: .\Release\ap_utils.mod
+# Defined Module: .\Release\file_utility.mod
+# Defined Module: .\Release\fundamental_constants.mod
+# Defined Module: .\Release\meshvolume.mod
+# Defined Module: .\Release\string_utility.mod
+# Defined Module: .\Release\type_kinds.mod
+".\Release\MeshConvert.obj": ".\Release\type_kinds.mod"
+".\Release\MeshConvert.obj": ".\Release\file_utility.mod"
+".\Release\MeshConvert.obj": ".\Release\string_utility.mod"
+".\Release\MeshConvert.obj": ".\Release\ap_utils.mod"
+".\Release\MeshConvert.obj": ".\Release\meshvolume.mod"
+
+
+".\Release\AP_utils.obj": ".\Release\type_kinds.mod"
+".\Release\AP_utils.obj": ".\Release\fundamental_constants.mod"
+".\Release\AP_utils.obj": ".\Release\ap_quicksort.mod"
+
+
+".\Release\Fundamental_Constants.obj": ".\Release\type_kinds.mod"
+
+".\Release\meshVolume.obj": ".\Release\type_kinds.mod"
+
+

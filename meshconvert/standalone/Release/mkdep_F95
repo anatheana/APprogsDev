@@ -1,0 +1,2 @@
+-quiet "-pre.\Release\\" -Y -modInfo -errdel -f90 -f makefile.amake -a -info -O2 -m32 -s -stack:32768000
+ -info "MeshConvert.f95" "AP_quicksort.f95" "AP_utils.f95" "File_Utility.f95" "Fundamental_Constants.f95" "meshVolume.f95" "String_Utility.f95" "Type_Kinds.f95" 

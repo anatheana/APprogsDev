@@ -82,6 +82,8 @@ SUBROUTINE first_pass()
   co_vals(1:val_n) = unsrt(1:val_n)
   DEALLOCATE(unsrt)
   
+  WRITE(*,*) co_vals
+  
 END SUBROUTINE first_pass
 
 

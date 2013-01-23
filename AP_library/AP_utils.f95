@@ -43,7 +43,22 @@ MODULE AP_utils
   INTERFACE is_sorted
     MODULE PROCEDURE is_sorted_int, is_sorted_real
   END INTERFACE is_sorted
-
+  
+  !! Public interface to union-function. Will sort integer and real lists
+  !! and find distinct elements. Call as 'CALL list_union(array, n, REMOVE, DELTA)'
+  !! where array is the list to be sorted and union-operated,
+  !! n when calling is the number of elements to be sorted in array,
+  !! and in exit is the number of elements in the union.
+  !! REMOVE is optional argument, the value given by it will be removed
+  !! from the union (default is no removals). Real-valued version of the
+  !! interface can also take optional argument DELTA, which is the absolute difference
+  !! in real values after which they are considered to differ from each other.
+  !! Default for DELTA is 10^-9. 
+  !! interface function union_integer is still public for compatibility reasons
+  INTERFACE list_union
+    MODULE PROCEDURE union_integer, union_real
+  END INTERFACE
+  
   LOGICAL :: rng_inited = .FALSE.
   
   !! Combined data type for van der Corput series
@@ -165,15 +180,7 @@ END FUNCTION is_sorted_real
 
 
 !  PUBLIC!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!! Union of list of integers. Call with
-!! union_integer(ivec, n, REMOVE), where
-!! ivec is the list of integers, that will, on return, contain a
-!! sorted union of input array.
-!! When calling, argument n is the number of elements in the input array
-!! from which the union will be formed. Use 0 if all teh elements are used.
-!! On return, n will be the number of elements in the union, and the union elements
-!! will be in places ivec(1:n).
-!! If optional integer 'REMOVE' is given, that value is not included in the union
+!! Integer implementation of the interface funtion list_union
 SUBROUTINE union_integer(ivec, n, REMOVE)
 	IMPLICIT NONE
   !! Input - integer array / output - sorted union of elements
@@ -215,6 +222,60 @@ SUBROUTINE union_integer(ivec, n, REMOVE)
 	n = nn
 	
 END SUBROUTINE union_integer
+
+
+!  PUBLIC!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! real implementation of the interface funtion list_union
+SUBROUTINE union_real(rvec, n, REMOVE, DELTA)
+	IMPLICIT NONE
+  !! Input - real array / output - sorted union of elements
+	REAL(FP_KIND), DIMENSION(:), INTENT(INOUT) :: rvec
+  !! Input - length of array to be handled or 0 for all values.
+  !! Output - number of distinct elements in ivec
+	INTEGER, INTENT(INOUT) :: n
+  !! Optional real value to be removed from the results
+	REAL(FP_KIND), OPTIONAL :: REMOVE
+  !! Optional real value, absolute difference of two distinct real values
+	REAL(FP_KIND), OPTIONAL :: DELTA
+
+	INTEGER :: i, nn
+  REAL(FP_KIND) :: ex, eps
+	
+	IF(n == 0) THEN
+		n = SIZE(rvec, 1)
+	END IF
+  
+  IF(PRESENT(DELTA)) THEN
+    eps = DELTA
+  ELSE
+    eps = 0.000000001_FP_KIND
+  END IF
+	
+	CALL AP_Qsort(rvec, HIGH=n)
+	
+	! More code, less CPU
+	IF(PRESENT(REMOVE)) THEN
+		nn = 0
+		ex = REMOVE
+		DO i=1,n
+			IF(abs(ex-rvec(i))<eps .OR. abs(REMOVE-rvec(i))<eps) CYCLE
+			nn = nn+1
+			ex = rvec(i)
+			rvec(nn) = ex
+		END DO
+	ELSE
+		nn = 1
+		ex = rvec(1)
+		DO i=2,n
+			IF(abs(ex-rvec(i))<eps) CYCLE
+			nn = nn+1
+			ex = rvec(i)
+			rvec(nn) = ex
+		END DO
+	END IF
+	n = nn
+	
+END SUBROUTINE union_real
 
 
 !  PUBLIC!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
